@@ -1,0 +1,50 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  VIEWER
+  ANALYST
+  ADMIN
+}
+
+enum RecordType {
+  INCOME
+  EXPENSE
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+model User {
+  id        String     @id @default(cuid())
+  email     String     @unique
+  password  String
+  role      Role       @default(VIEWER)
+  status    UserStatus @default(ACTIVE)
+  createdAt DateTime   @default(now())
+  records   Record[]
+}
+
+model Record {
+  id        String     @id @default(cuid())
+  userId    String
+  amount    Float
+  type      RecordType
+  category  String
+  date      DateTime
+  note      String?
+  createdAt DateTime   @default(now())
+  user      User       @relation(fields: [userId], references: [id])
+
+  @@index([userId])
+  @@index([date])
+  @@index([category])
+}
