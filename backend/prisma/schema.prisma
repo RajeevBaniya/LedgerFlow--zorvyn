@@ -36,15 +36,17 @@ model User {
 model Record {
   id        String     @id @default(cuid())
   userId    String
-  amount    Float
+  amount    BigInt
   type      RecordType
   category  String
   date      DateTime
   note      String?
   createdAt DateTime   @default(now())
+  deletedAt DateTime?
   user      User       @relation(fields: [userId], references: [id])
 
   @@index([userId])
+  @@index([userId, deletedAt])
   @@index([date])
   @@index([category])
 }
