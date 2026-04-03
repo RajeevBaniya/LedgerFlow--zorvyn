@@ -1,15 +1,27 @@
-const validate = (schema) => {
-  const validationMiddleware = (req, res, next) => {
-    const parsedData = schema.safeParse(req.body)
+import { createError } from "../utils/error.js"
 
-    if (!parsedData.success) {
-      return res.status(400).json({
-        message: "Validation failed",
-        errors: parsedData.error.issues
-      })
+const ALLOWED_SOURCES = ["body", "query", "params"]
+
+const validate = (schema, source = "body") => {
+  const validationMiddleware = (req, res, next) => {
+    if (!ALLOWED_SOURCES.includes(source)) {
+      return next(createError("Validation source is invalid", 500))
     }
 
-    req.body = parsedData.data
+    const parsedData = schema.safeParse(req[source])
+
+    if (!parsedData.success) {
+      return next(parsedData.error)
+    }
+
+    if (source === "query") {
+      req.validatedQuery = parsedData.data
+    } else if (source === "params") {
+      req.validatedParams = parsedData.data
+    } else {
+      req[source] = parsedData.data
+    }
+
     return next()
   }
 
