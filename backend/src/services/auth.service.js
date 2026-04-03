@@ -1,17 +1,11 @@
 import prismaClientPackage from "@prisma/client"
 
 import prisma from "../config/db.js"
+import { createError } from "../utils/error.js"
 import { comparePassword, hashPassword } from "../utils/hash.js"
 import { generateToken } from "../utils/token.js"
 
 const { Role, UserStatus } = prismaClientPackage
-
-const createServiceError = (message, statusCode) => {
-  const error = new Error(message)
-  error.statusCode = statusCode
-
-  return error
-}
 
 const sanitizeUser = (user) => {
   return {
@@ -31,7 +25,7 @@ const signupUser = async (data) => {
   })
 
   if (existingUser) {
-    throw createServiceError("Email already in use", 409)
+    throw createError("Email already in use", 409)
   }
 
   const hashedPassword = await hashPassword(data.password)
@@ -55,17 +49,17 @@ const loginUser = async (data) => {
   })
 
   if (!user) {
-    throw createServiceError("Invalid credentials", 401)
+    throw createError("Invalid credentials", 401)
   }
 
   if (user.status !== UserStatus.ACTIVE) {
-    throw createServiceError("User is inactive", 403)
+    throw createError("User is inactive", 403)
   }
 
   const isPasswordValid = await comparePassword(data.password, user.password)
 
   if (!isPasswordValid) {
-    throw createServiceError("Invalid credentials", 401)
+    throw createError("Invalid credentials", 401)
   }
 
   const tokenPayload = { sub: user.id, role: user.role }
@@ -79,7 +73,7 @@ const seedAdmin = async () => {
   const adminPassword = process.env.ADMIN_PASSWORD
 
   if (!adminEmail || !adminPassword) {
-    throw createServiceError("ADMIN_EMAIL and ADMIN_PASSWORD are required", 500)
+    throw createError("ADMIN_EMAIL and ADMIN_PASSWORD are required", 500)
   }
 
   const normalizedEmail = adminEmail.toLowerCase()
