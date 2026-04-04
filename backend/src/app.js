@@ -10,7 +10,13 @@ import userRouter from "./routes/user.routes.js"
 const createApp = () => {
   const app = express()
 
-  app.use(cors())
+  const clientUrl = process.env.CLIENT_URL
+  app.use(
+    cors({
+      origin: clientUrl ?? true,
+      credentials: Boolean(clientUrl)
+    })
+  )
   app.use(express.json())
   app.use("/api/auth", authRouter)
   app.use("/api/dashboard", dashboardRouter)
