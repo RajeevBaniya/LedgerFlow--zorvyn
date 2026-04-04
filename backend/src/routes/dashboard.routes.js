@@ -4,7 +4,8 @@ import {
   getCategoryBreakdown,
   getMonthlyTrends,
   getRecentActivity,
-  getSummary
+  getSummary,
+  getWeeklyTrends
 } from "../controllers/dashboard.controller.js"
 import { authMiddleware } from "../middleware/auth.middleware.js"
 import { authorizeRoles } from "../middleware/role.middleware.js"
@@ -19,6 +20,7 @@ dashboardRouter.use(authMiddleware)
 dashboardRouter.get("/summary", authorizeRoles(summaryRoles), getSummary)
 dashboardRouter.get("/activity", authorizeRoles(summaryRoles), getRecentActivity)
 dashboardRouter.get("/categories", authorizeRoles(categoryAndTrendRoles), getCategoryBreakdown)
+dashboardRouter.get("/trends/weekly", authorizeRoles(categoryAndTrendRoles), getWeeklyTrends)
 dashboardRouter.get("/trends", authorizeRoles(categoryAndTrendRoles), getMonthlyTrends)
 
 export default dashboardRouter

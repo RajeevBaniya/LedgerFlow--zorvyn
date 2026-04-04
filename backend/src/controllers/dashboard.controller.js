@@ -2,7 +2,8 @@ import {
   getCategoryBreakdown as getCategoryBreakdownService,
   getMonthlyTrends as getMonthlyTrendsService,
   getRecentActivity as getRecentActivityService,
-  getSummary as getSummaryService
+  getSummary as getSummaryService,
+  getWeeklyTrends as getWeeklyTrendsService
 } from "../services/dashboard.service.js"
 
 const getSummary = async (req, res, next) => {
@@ -47,6 +48,20 @@ const getMonthlyTrends = async (req, res, next) => {
   }
 }
 
+const getWeeklyTrends = async (req, res, next) => {
+  try {
+    const userId = req.user.id
+    const trends = await getWeeklyTrendsService(userId)
+
+    return res.status(200).json({
+      success: true,
+      data: trends
+    })
+  } catch (error) {
+    return next(error)
+  }
+}
+
 const getRecentActivity = async (req, res, next) => {
   try {
     const userId = req.user.id
@@ -65,5 +80,6 @@ export {
   getCategoryBreakdown,
   getMonthlyTrends,
   getRecentActivity,
-  getSummary
+  getSummary,
+  getWeeklyTrends
 }

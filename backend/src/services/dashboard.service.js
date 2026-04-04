@@ -20,6 +20,35 @@ const getUtcMonthKey = (value) => {
   return `${year}-${month}`
 }
 
+const getIsoWeekKeyUtc = (value) => {
+  const x = new Date(Date.UTC(value.getUTCFullYear(), value.getUTCMonth(), value.getUTCDate()))
+  let isoDow = x.getUTCDay()
+
+  if (isoDow === 0) {
+    isoDow = 7
+  }
+
+  const thursday = new Date(x)
+  thursday.setUTCDate(x.getUTCDate() + (4 - isoDow))
+  const isoYear = thursday.getUTCFullYear()
+
+  const jan4 = new Date(Date.UTC(isoYear, 0, 4))
+  let jan4Dow = jan4.getUTCDay()
+
+  if (jan4Dow === 0) {
+    jan4Dow = 7
+  }
+
+  const week1Thursday = new Date(jan4)
+  week1Thursday.setUTCDate(jan4.getUTCDate() + (4 - jan4Dow))
+
+  const week =
+    1 +
+    Math.floor((thursday.getTime() - week1Thursday.getTime()) / (7 * 24 * 60 * 60 * 1000))
+
+  return `${isoYear}-W${String(week).padStart(2, "0")}`
+}
+
 const getSummary = async (userId) => {
   const incomeResult = await prisma.record.aggregate({
     where: {
@@ -127,6 +156,65 @@ const getMonthlyTrends = async (userId) => {
   return trends
 }
 
+const getWeeklyTrends = async (userId) => {
+  const records = await prisma.record.findMany({
+    where: activeRecordsWhere(userId),
+    select: {
+      date: true,
+      type: true,
+      amount: true
+    },
+    orderBy: {
+      date: "asc"
+    }
+  })
+
+  const weekMap = new Map()
+
+  records.forEach((record) => {
+    const week = getIsoWeekKeyUtc(record.date)
+
+    if (!weekMap.has(week)) {
+      weekMap.set(week, {
+        week,
+        income: zeroPaise,
+        expense: zeroPaise
+      })
+    }
+
+    const current = weekMap.get(week)
+    const recordAmount = record.amount ?? zeroPaise
+
+    if (record.type === RecordType.INCOME) {
+      current.income = current.income + recordAmount
+    } else {
+      current.expense = current.expense + recordAmount
+    }
+  })
+
+  const trends = Array.from(weekMap.values())
+    .sort((left, right) => {
+      if (left.week < right.week) {
+        return -1
+      }
+
+      if (left.week > right.week) {
+        return 1
+      }
+
+      return 0
+    })
+    .map((row) => {
+      return {
+        week: row.week,
+        income: formatPaiseAsRupees(row.income),
+        expense: formatPaiseAsRupees(row.expense)
+      }
+    })
+
+  return trends
+}
+
 const getRecentActivity = async (userId) => {
   const records = await prisma.record.findMany({
     where: activeRecordsWhere(userId),
@@ -141,5 +229,6 @@ export {
   getCategoryBreakdown,
   getMonthlyTrends,
   getRecentActivity,
-  getSummary
+  getSummary,
+  getWeeklyTrends
 }
