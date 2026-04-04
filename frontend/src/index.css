@@ -1,0 +1,41 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#root {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  @apply text-finance-light;
+  background: linear-gradient(180deg, #0b1426 0%, #0f1b2d 100%);
+}
+
+@layer components {
+  .glass-surface {
+    @apply rounded-xl border border-white/20 bg-white/70 shadow-sm backdrop-blur-sm transition-all duration-200;
+  }
+
+  .glass-surface-interactive {
+    @apply rounded-xl border border-white/20 bg-white/70 shadow-sm backdrop-blur-sm transition-all duration-200;
+  }
+
+  .auth-card {
+    @apply w-full max-w-md rounded-2xl border border-white/25 bg-finance-surface/95 backdrop-blur-md transition-all duration-200;
+    box-shadow:
+      0 0 0 1px rgb(255 255 255 / 0.06),
+      0 24px 48px -12px rgb(0 0 0 / 0.65),
+      0 12px 24px -8px rgb(0 0 0 / 0.45);
+  }
+
+  .auth-label {
+    @apply block text-sm text-finance-secondary;
+  }
+
+  .auth-input {
+    @apply w-full min-h-[44px] rounded-lg border border-white/15 bg-black/25 px-3 py-2.5 text-finance-light placeholder:text-gray-500 focus:border-finance-primary/50 focus:outline-none focus:ring-1 focus:ring-finance-primary/35;
+  }
+}
