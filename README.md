@@ -68,11 +68,30 @@ npm run dev
 
 | Role | How you get it | What to use to sign in |
 |------|------------------|-------------------------|
-| **Admin** | Seeded when the DB has **no users** yet | **`ADMIN_EMAIL`** and **`ADMIN_PASSWORD`** from `backend/.env` (see `backend/.env.example`). This account **controls the app**: users, roles, records, permissions. |
-| **Viewer** | **Sign up** (`/signup` or `POST /api/auth/signup`) | The **email and password you chose** at signup. New accounts are always **VIEWER**. |
-| **Analyst** | **No separate signup.** An **Admin** changes a user’s role from **VIEWER → ANALYST** (Admin page or API). | **Same email/password** as that user; log in again after the role change so the token reflects **ANALYST**. |
+| **Admin** | Seeded when the DB has **no users** yet | **`ADMIN_EMAIL`** and **`ADMIN_PASSWORD`** from `backend/.env`. This account **controls the app**: users, roles, records, and seeing how the full UI + API behave together. |
+| **Viewer** | **Sign up** (`/signup` or `POST /api/auth/signup`) | The **email and password you chose** at signup. New accounts are always **VIEWER** (limited dashboard; no records list or trend charts). |
+| **Analyst** | **No separate signup.** An **Admin** promotes a user **VIEWER → ANALYST** (Admin page or API). | **Same email/password** as that user; **log out and log in again** after the role change so the token shows **ANALYST** (records + full dashboard charts). |
 
-**Do not commit real passwords.** Set `ADMIN_EMAIL` / `ADMIN_PASSWORD` only in local `.env` or your host’s environment (e.g. Render). More detail: `backend/README.md` → *Default admin*.
+### Example admin (matches `backend/README.md`)
+
+If your `backend/.env` uses the same values as the backend docs, you can sign in on the UI with:
+
+| | |
+|--|--|
+| **Email** | `admin@ledgerflow.com` |
+| **Password** | `Admin@9988` |
+
+Use this **admin** login to explore **all features**: dashboard (including charts), records, and **Admin → Users** to change roles and status. It is the account meant to **drive the whole app** end-to-end.
+
+
+### Try the full flow (Viewer → Analyst)
+
+1. **Sign up** a new user (e.g. `viewer-demo@example.com`) — that user is a **Viewer**. Log in as them to see the **restricted** UI (summary + activity only).
+2. **Log out or login with admin** (login credentials above or you can setup in in your local .env).
+3. Open **Admin**, find that user, and change their role from **VIEWER** to **ANALYST**.
+4. **Log out**, then **log in again** as the same viewer email/password — you should see **records** and **dashboard charts** (Analyst experience).
+
+More detail: `backend/README.md` → *Default admin* and *Trying VIEWER, ANALYST, and admin*.
 
 ## Notes
 
