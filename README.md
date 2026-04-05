@@ -1,5 +1,7 @@
 # LedgerFlow
 
+**Live app:** [https://ledgerfloww.vercel.app/](https://ledgerfloww.vercel.app/)
+
 ## Project overview
 
 LedgerFlow is a **finance API** with **role-based access**: users keep income/expense records, see dashboard summaries and trends, and **admins** manage users and permissions.
@@ -74,7 +76,7 @@ npm run dev
 
 ### Example admin (matches `backend/README.md`)
 
-If your `backend/.env` uses the same values as the backend docs, you can sign in on the UI with:
+If your `backend/.env` uses the same values as the backend docs, you can sign in on the UI with or try above in the given deplyed link by login there as i have also built a simple ui:
 
 | | |
 |--|--|
