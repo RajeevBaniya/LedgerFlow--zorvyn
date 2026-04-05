@@ -134,9 +134,9 @@ Never commit `.env`.
 
 ---
 
-## Default admin (local setup)
+## Default admin 
 
-`ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` define the **master admin** for this app. Someone has to start as **ADMIN** so the system can manage users (roles, active/inactive) and access; that first account comes from these variables instead of a signup form.
+`ADMIN_EMAIL` and `ADMIN_PASSWORD` in `.env` define the **master admin** for this app. start and login as **ADMIN** so the system can manage users (roles, active/inactive) and access; that first account comes from these variables instead of a signup form.
 
 **This admin acts as the initial system controller to manage users and permissions.**
 

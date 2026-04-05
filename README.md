@@ -64,9 +64,15 @@ npm install
 npm run dev
 ```
 
-## Default admin
+## Login & roles (quick reference)
 
-The first admin account is created from **`ADMIN_EMAIL`** and **`ADMIN_PASSWORD`** in `backend/.env` when the database has no users yet. Use it to manage users and roles. Details: `backend/README.md`.
+| Role | How you get it | What to use to sign in |
+|------|------------------|-------------------------|
+| **Admin** | Seeded when the DB has **no users** yet | **`ADMIN_EMAIL`** and **`ADMIN_PASSWORD`** from `backend/.env` (see `backend/.env.example`). This account **controls the app**: users, roles, records, permissions. |
+| **Viewer** | **Sign up** (`/signup` or `POST /api/auth/signup`) | The **email and password you chose** at signup. New accounts are always **VIEWER**. |
+| **Analyst** | **No separate signup.** An **Admin** changes a user’s role from **VIEWER → ANALYST** (Admin page or API). | **Same email/password** as that user; log in again after the role change so the token reflects **ANALYST**. |
+
+**Do not commit real passwords.** Set `ADMIN_EMAIL` / `ADMIN_PASSWORD` only in local `.env` or your host’s environment (e.g. Render). More detail: `backend/README.md` → *Default admin*.
 
 ## Notes
 
