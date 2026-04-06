@@ -12,15 +12,14 @@ import { authorizeRoles } from "../middleware/role.middleware.js"
 
 const dashboardRouter = Router()
 
-const summaryRoles = ["ADMIN", "ANALYST", "VIEWER"]
-const categoryAndTrendRoles = ["ADMIN", "ANALYST"]
+const allRoles = ["ADMIN", "ANALYST", "VIEWER"]
 
 dashboardRouter.use(authMiddleware)
 
-dashboardRouter.get("/summary", authorizeRoles(summaryRoles), getSummary)
-dashboardRouter.get("/activity", authorizeRoles(summaryRoles), getRecentActivity)
-dashboardRouter.get("/categories", authorizeRoles(categoryAndTrendRoles), getCategoryBreakdown)
-dashboardRouter.get("/trends/weekly", authorizeRoles(categoryAndTrendRoles), getWeeklyTrends)
-dashboardRouter.get("/trends", authorizeRoles(categoryAndTrendRoles), getMonthlyTrends)
+dashboardRouter.get("/summary", authorizeRoles(allRoles), getSummary)
+dashboardRouter.get("/activity", authorizeRoles(allRoles), getRecentActivity)
+dashboardRouter.get("/categories", authorizeRoles(allRoles), getCategoryBreakdown)
+dashboardRouter.get("/trends/weekly", authorizeRoles(allRoles), getWeeklyTrends)
+dashboardRouter.get("/trends", authorizeRoles(allRoles), getMonthlyTrends)
 
 export default dashboardRouter

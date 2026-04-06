@@ -20,13 +20,12 @@ const Dashboard = () => {
     activity,
     status,
     errorMessage,
-    canLoadCharts,
     reload
   } = useDashboardData()
 
   const [trendType, setTrendType] = useState("monthly")
 
-  const spendingCompare = canLoadCharts ? spendingMonthOverMonth(trends) : null
+  const spendingCompare = spendingMonthOverMonth(trends)
 
   const netValueClass =
     parseRupeesString(summary?.netBalance ?? 0) < 0
@@ -62,7 +61,7 @@ const Dashboard = () => {
     categories,
     trends,
     weeklyTrends,
-    canLoadCharts
+    true
   )
 
   return (
@@ -81,9 +80,8 @@ const Dashboard = () => {
         <p className="text-sm text-finance-secondary md:text-base">No data available yet.</p>
       ) : null}
 
-      {canLoadCharts ? (
-        <>
-          {spendingCompare ? (
+      <>
+        {spendingCompare ? (
             <p
               className={`text-sm md:text-base ${
                 spendingCompare.kind === "up"
@@ -147,12 +145,7 @@ const Dashboard = () => {
               </div>
             </div>
           </div>
-        </>
-      ) : (
-        <p className="text-sm text-finance-secondary md:text-base">
-          Category and trend charts are available for Analyst and Admin roles.
-        </p>
-      )}
+      </>
 
       <div className="min-w-0">
         <RecentActivity items={activity} />

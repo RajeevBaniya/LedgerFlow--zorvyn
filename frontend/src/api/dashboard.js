@@ -1,6 +1,6 @@
 import { apiClient } from "./axios.js"
 
-const DASHBOARD_CHART_ROLES = ["ADMIN", "ANALYST"]
+const DASHBOARD_CHART_ROLES = ["ADMIN", "ANALYST", "VIEWER"]
 
 const getSummary = async () => {
   const response = await apiClient.get("/dashboard/summary")
@@ -27,38 +27,21 @@ const getActivity = async () => {
   return response.data.data
 }
 
-const loadDashboardBundle = async (role) => {
-  const includeCharts = role && DASHBOARD_CHART_ROLES.includes(role)
-
-  if (includeCharts) {
-    const [summaryData, categoriesData, trendsData, weeklyTrendsData, activityData] =
-      await Promise.all([
-        getSummary(),
-        getCategories(),
-        getTrends(),
-        getWeeklyTrends(),
-        getActivity()
-      ])
-
-    return {
-      summary: summaryData,
-      categories: Array.isArray(categoriesData) ? categoriesData : [],
-      trends: Array.isArray(trendsData) ? trendsData : [],
-      weeklyTrends: Array.isArray(weeklyTrendsData) ? weeklyTrendsData : [],
-      activity: Array.isArray(activityData) ? activityData : []
-    }
-  }
-
-  const [summaryData, activityData] = await Promise.all([
-    getSummary(),
-    getActivity()
-  ])
+const loadDashboardBundle = async () => {
+  const [summaryData, categoriesData, trendsData, weeklyTrendsData, activityData] =
+    await Promise.all([
+      getSummary(),
+      getCategories(),
+      getTrends(),
+      getWeeklyTrends(),
+      getActivity()
+    ])
 
   return {
     summary: summaryData,
-    categories: [],
-    trends: [],
-    weeklyTrends: [],
+    categories: Array.isArray(categoriesData) ? categoriesData : [],
+    trends: Array.isArray(trendsData) ? trendsData : [],
+    weeklyTrends: Array.isArray(weeklyTrendsData) ? weeklyTrendsData : [],
     activity: Array.isArray(activityData) ? activityData : []
   }
 }

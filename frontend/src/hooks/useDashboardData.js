@@ -1,13 +1,8 @@
 import { useCallback, useEffect, useState } from "react"
 
-import {
-  DASHBOARD_CHART_ROLES,
-  loadDashboardBundle
-} from "../api/dashboard.js"
-import { useAuth } from "./useAuth.js"
+import { loadDashboardBundle } from "../api/dashboard.js"
 
 const useDashboardData = () => {
-  const { user } = useAuth()
   const [summary, setSummary] = useState(null)
   const [categories, setCategories] = useState([])
   const [trends, setTrends] = useState([])
@@ -25,7 +20,7 @@ const useDashboardData = () => {
       setErrorMessage("")
 
       try {
-        const data = await loadDashboardBundle(user?.role)
+        const data = await loadDashboardBundle()
 
         if (cancelled) {
           return
@@ -56,7 +51,7 @@ const useDashboardData = () => {
     return () => {
       cancelled = true
     }
-  }, [user?.role, reloadKey])
+  }, [reloadKey])
 
   const reload = useCallback(() => {
     setReloadKey((key) => key + 1)
@@ -70,9 +65,6 @@ const useDashboardData = () => {
     activity,
     status,
     errorMessage,
-    canLoadCharts: Boolean(
-      user?.role && DASHBOARD_CHART_ROLES.includes(user.role)
-    ),
     reload
   }
 }
