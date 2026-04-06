@@ -48,7 +48,6 @@ const formatPaiseAsRupees = (paise) => {
 const mapRecordResponse = (record) => {
   return {
     id: record.id,
-    userId: record.userId,
     amount: formatPaiseAsRupees(record.amount),
     type: record.type,
     category: record.category,
