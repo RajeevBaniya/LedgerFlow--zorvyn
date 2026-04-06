@@ -13,6 +13,14 @@ const RECENT_ACTIVITY_LIMIT = 10
 
 const zeroPaise = 0n
 
+const buildDashboardWhere = (userId) => {
+  if (userId) {
+    return activeRecordsWhere(userId)
+  }
+
+  return { deletedAt: null }
+}
+
 const getUtcMonthKey = (value) => {
   const year = value.getUTCFullYear()
   const month = String(value.getUTCMonth() + 1).padStart(2, "0")
@@ -50,9 +58,11 @@ const getIsoWeekKeyUtc = (value) => {
 }
 
 const getSummary = async (userId) => {
+  const where = buildDashboardWhere(userId)
+
   const incomeResult = await prisma.record.aggregate({
     where: {
-      ...activeRecordsWhere(userId),
+      ...where,
       type: RecordType.INCOME
     },
     _sum: {
@@ -62,7 +72,7 @@ const getSummary = async (userId) => {
 
   const expenseResult = await prisma.record.aggregate({
     where: {
-      ...activeRecordsWhere(userId),
+      ...where,
       type: RecordType.EXPENSE
     },
     _sum: {
@@ -82,9 +92,11 @@ const getSummary = async (userId) => {
 }
 
 const getCategoryBreakdown = async (userId) => {
+  const where = buildDashboardWhere(userId)
+
   const rows = await prisma.record.groupBy({
     by: ["category"],
-    where: activeRecordsWhere(userId),
+    where,
     _sum: {
       amount: true
     },
@@ -104,8 +116,10 @@ const getCategoryBreakdown = async (userId) => {
 }
 
 const getMonthlyTrends = async (userId) => {
+  const where = buildDashboardWhere(userId)
+
   const records = await prisma.record.findMany({
-    where: activeRecordsWhere(userId),
+    where,
     select: {
       date: true,
       type: true,
@@ -157,8 +171,10 @@ const getMonthlyTrends = async (userId) => {
 }
 
 const getWeeklyTrends = async (userId) => {
+  const where = buildDashboardWhere(userId)
+
   const records = await prisma.record.findMany({
-    where: activeRecordsWhere(userId),
+    where,
     select: {
       date: true,
       type: true,
@@ -216,8 +232,10 @@ const getWeeklyTrends = async (userId) => {
 }
 
 const getRecentActivity = async (userId) => {
+  const where = buildDashboardWhere(userId)
+
   const records = await prisma.record.findMany({
-    where: activeRecordsWhere(userId),
+    where,
     orderBy: { createdAt: "desc" },
     take: RECENT_ACTIVITY_LIMIT
   })

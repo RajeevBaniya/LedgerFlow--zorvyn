@@ -8,7 +8,7 @@ import {
 
 const getSummary = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user.role === "VIEWER" ? undefined : req.user.id
     const summary = await getSummaryService(userId)
 
     return res.status(200).json({
@@ -22,7 +22,7 @@ const getSummary = async (req, res, next) => {
 
 const getCategoryBreakdown = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user.role === "VIEWER" ? undefined : req.user.id
     const categories = await getCategoryBreakdownService(userId)
 
     return res.status(200).json({
@@ -36,7 +36,7 @@ const getCategoryBreakdown = async (req, res, next) => {
 
 const getMonthlyTrends = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user.role === "VIEWER" ? undefined : req.user.id
     const trends = await getMonthlyTrendsService(userId)
 
     return res.status(200).json({
@@ -50,7 +50,7 @@ const getMonthlyTrends = async (req, res, next) => {
 
 const getWeeklyTrends = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user.role === "VIEWER" ? undefined : req.user.id
     const trends = await getWeeklyTrendsService(userId)
 
     return res.status(200).json({
@@ -64,7 +64,7 @@ const getWeeklyTrends = async (req, res, next) => {
 
 const getRecentActivity = async (req, res, next) => {
   try {
-    const userId = req.user.id
+    const userId = req.user.role === "VIEWER" ? undefined : req.user.id
     const activity = await getRecentActivityService(userId)
 
     return res.status(200).json({
