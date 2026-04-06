@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 
-import { postSignup } from "../api/auth.js"
+import { postLogin, postSignup } from "../api/auth.js"
 import AuthBranding from "../components/common/AuthBranding.jsx"
 import { useAuth } from "../hooks/useAuth.js"
+import { decodeJwtPayload } from "../utils/jwtDecode.js"
 
 const Signup = () => {
   const [email, setEmail] = useState("")
@@ -11,7 +12,7 @@ const Signup = () => {
   const [errorMessage, setErrorMessage] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  const { user, token, isAuthReady } = useAuth()
+  const { login, user, token, isAuthReady } = useAuth()
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -41,7 +42,20 @@ const Signup = () => {
 
     try {
       await postSignup({ email, password })
-      navigate("/login", { replace: true })
+
+      const loginResponse = await postLogin({ email, password })
+      const newToken = loginResponse.data?.data?.token
+
+      if (!newToken) {
+        navigate("/login", { replace: true })
+        return
+      }
+
+      login(newToken)
+
+      const payload = decodeJwtPayload(newToken)
+      const role = payload?.role
+      navigate(role === "ADMIN" ? "/admin" : "/dashboard", { replace: true })
     } catch (error) {
       const message =
         error.response?.data?.message ?? error.message ?? "Signup failed"
