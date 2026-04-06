@@ -5,21 +5,13 @@ import {
   formatPaiseAsRupees,
   mapRecentActivityResponse
 } from "../utils/money.js"
-import { activeRecordsWhere } from "../utils/recordScope.js"
-
 const { RecordType } = prismaClientPackage
 
 const RECENT_ACTIVITY_LIMIT = 10
 
 const zeroPaise = 0n
 
-const buildDashboardWhere = (userId) => {
-  if (userId) {
-    return activeRecordsWhere(userId)
-  }
-
-  return { deletedAt: null }
-}
+const activeWhere = { deletedAt: null }
 
 const getUtcMonthKey = (value) => {
   const year = value.getUTCFullYear()
@@ -57,12 +49,10 @@ const getIsoWeekKeyUtc = (value) => {
   return `${isoYear}-W${String(week).padStart(2, "0")}`
 }
 
-const getSummary = async (userId) => {
-  const where = buildDashboardWhere(userId)
-
+const getSummary = async () => {
   const incomeResult = await prisma.record.aggregate({
     where: {
-      ...where,
+      ...activeWhere,
       type: RecordType.INCOME
     },
     _sum: {
@@ -72,7 +62,7 @@ const getSummary = async (userId) => {
 
   const expenseResult = await prisma.record.aggregate({
     where: {
-      ...where,
+      ...activeWhere,
       type: RecordType.EXPENSE
     },
     _sum: {
@@ -91,12 +81,10 @@ const getSummary = async (userId) => {
   }
 }
 
-const getCategoryBreakdown = async (userId) => {
-  const where = buildDashboardWhere(userId)
-
+const getCategoryBreakdown = async () => {
   const rows = await prisma.record.groupBy({
     by: ["category"],
-    where,
+    where: activeWhere,
     _sum: {
       amount: true
     },
@@ -115,11 +103,9 @@ const getCategoryBreakdown = async (userId) => {
   return breakdown
 }
 
-const getMonthlyTrends = async (userId) => {
-  const where = buildDashboardWhere(userId)
-
+const getMonthlyTrends = async () => {
   const records = await prisma.record.findMany({
-    where,
+    where: activeWhere,
     select: {
       date: true,
       type: true,
@@ -170,11 +156,9 @@ const getMonthlyTrends = async (userId) => {
   return trends
 }
 
-const getWeeklyTrends = async (userId) => {
-  const where = buildDashboardWhere(userId)
-
+const getWeeklyTrends = async () => {
   const records = await prisma.record.findMany({
-    where,
+    where: activeWhere,
     select: {
       date: true,
       type: true,
@@ -231,11 +215,9 @@ const getWeeklyTrends = async (userId) => {
   return trends
 }
 
-const getRecentActivity = async (userId) => {
-  const where = buildDashboardWhere(userId)
-
+const getRecentActivity = async () => {
   const records = await prisma.record.findMany({
-    where,
+    where: activeWhere,
     orderBy: { createdAt: "desc" },
     take: RECENT_ACTIVITY_LIMIT
   })

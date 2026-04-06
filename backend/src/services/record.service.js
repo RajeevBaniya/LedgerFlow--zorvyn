@@ -35,8 +35,8 @@ const parseLimit = (value) => {
   return parsedLimit
 }
 
-const buildRecordWhereFilter = (userId, query) => {
-  const where = { ...activeRecordsWhere(userId) }
+const buildRecordWhereFilter = (query) => {
+  const where = { deletedAt: null }
 
   if (query.type === RecordType.INCOME || query.type === RecordType.EXPENSE) {
     where.type = query.type
@@ -95,7 +95,7 @@ const createRecord = async (userId, data) => {
 }
 
 const getRecords = async (userId, query) => {
-  const where = buildRecordWhereFilter(userId, query)
+  const where = buildRecordWhereFilter(query)
 
   const page = parsePositiveInteger(query.page, DEFAULT_PAGE)
   const limit = parseLimit(query.limit)
