@@ -172,6 +172,8 @@ Use `data.token` as `Authorization: Bearer <token>` on protected routes.
 
 A **VIEWER** does not gain records or insights on their own. An **ADMIN** must change their role to **ANALYST** (Admin UI or `PATCH /api/users/:id/role`). After that, the same user can **read records** and use the **full dashboard** (categories, monthly/weekly trends) the next time they use a fresh token (log in again if the client caches the old role).
 
+Role updates are currently synced on reload using the `/me` endpoint. For real-time updates, this can be extended using polling or websocket-based event systems, but was kept simple here to avoid unnecessary complexity.
+
 **ADMIN — seeded account**
 
 To act as admin, log in with **`ADMIN_EMAIL`** and **`ADMIN_PASSWORD`** from `.env` (same values as in **Default admin (local setup)** above). That account can manage users, records, and roles.

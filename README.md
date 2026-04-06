@@ -93,6 +93,8 @@ Use this **admin** login to explore **all features**: dashboard (including chart
 3. Open **Admin**, find that user, and change their role from **VIEWER** to **ANALYST**.
 4. **Log out**, then **log in again** as the same viewer email/password — you should see **records** and **dashboard charts** (Analyst experience).
 
+Role updates are currently synced on reload using the `/me` endpoint. For real-time updates, this can be extended using polling or websocket-based event systems, but was kept simple here to avoid unnecessary complexity.
+
 More detail: `backend/README.md` → *Default admin* and *Trying VIEWER, ANALYST, and admin*.
 
 ## Notes

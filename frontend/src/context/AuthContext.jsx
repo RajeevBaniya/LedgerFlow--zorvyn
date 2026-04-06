@@ -4,6 +4,7 @@ import { apiClient } from "../api/axios.js"
 import { decodeJwtPayload } from "../utils/jwtDecode.js"
 
 const AuthContext = createContext(null)
+const ROLE_SYNC_INTERVAL_MS = 30_000
 
 const readSessionFromStorage = () => {
   const stored = localStorage.getItem("token")
@@ -45,6 +46,7 @@ const AuthProvider = ({ children }) => {
 
   useEffect(() => {
     let cancelled = false
+    let pollingTimerId = null
 
     const syncUserFromBackend = async () => {
       if (!session.token) {
@@ -71,6 +73,46 @@ const AuthProvider = ({ children }) => {
             user
           }
         })
+
+        pollingTimerId = setInterval(async () => {
+          try {
+            const latestUser = await loadCurrentUser()
+
+            if (cancelled) {
+              return
+            }
+
+            setSession((current) => {
+              if (!current.token) {
+                return current
+              }
+
+              const hasRoleChanged = current.user?.role !== latestUser.role
+              const hasUserIdChanged = current.user?.id !== latestUser.id
+
+              if (!hasRoleChanged && !hasUserIdChanged) {
+                return current
+              }
+
+              return {
+                token: current.token,
+                user: latestUser
+              }
+            })
+          } catch (_error) {
+            if (cancelled) {
+              return
+            }
+
+            if (pollingTimerId) {
+              clearInterval(pollingTimerId)
+              pollingTimerId = null
+            }
+
+            localStorage.removeItem("token")
+            setSession({ user: null, token: null })
+          }
+        }, ROLE_SYNC_INTERVAL_MS)
       } catch (_error) {
         if (cancelled) {
           return
@@ -89,6 +131,10 @@ const AuthProvider = ({ children }) => {
 
     return () => {
       cancelled = true
+
+      if (pollingTimerId) {
+        clearInterval(pollingTimerId)
+      }
     }
   }, [session.token])
 
