@@ -4,8 +4,6 @@
 
 ## Project overview
 
-LedgerFlow is a **finance API** with **role-based access**: users keep income/expense records, see dashboard summaries and trends, and **admins** manage users and permissions.
-
 **The backend is the main work in this repo.** The frontend is a small companion app for **visualization and manual testing**—not the core of the project.
 
 ## Features
